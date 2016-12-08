@@ -1,4 +1,5 @@
 from day07 import count_tls, supports_tls, find_hypernets, has_abba
+from day07 import find_supernets, find_abas, supports_ssl, count_ssl
 
 
 def test_count_tls():
@@ -28,3 +29,27 @@ def test_has_abba():
     assert not has_abba('aaaa[qwer]tyui')
     assert has_abba('ioxxoj[asdfgh]zxcvbn')
     assert has_abba('ioxxoj[asdfgh]zxcvbnaaaa[qwer]tyui')
+
+
+def test_find_supernets():
+    assert find_supernets('abba[mnop]qrst') == ['abba', 'qrst']
+    assert find_supernets('abcd[bddb]xyyx') == ['abcd', 'xyyx']
+    assert find_supernets('aaaa[qwer]tyui') == ['aaaa', 'tyui']
+    assert find_supernets('abba[mnop]qrstabcd[bddb]xyyx') == ['abba', 'qrstabcd', 'xyyx']
+
+
+def test_find_abas():
+    assert find_abas(['aba', 'bab', 'xyz']) == ['aba', 'bab']
+    assert find_abas(['zzz']) == []
+    assert find_abas(['zazbz'], ['abc'], ['brb']) == ['zaz', 'zbz', 'brb']
+
+
+def test_supports_ssl():
+    assert supports_ssl('aba[bab]xyz')
+    assert not supports_ssl('xyx[xyx]xyx')
+    assert supports_ssl('aaa[kek]eke')
+    assert supports_ssl('zazbz[bzb]cdb')
+
+
+def test_count_ssl():
+    assert count_ssl('test_input2.txt') == 3

@@ -23,5 +23,21 @@ def find_hypernets(address):
     return re.findall(r'\[(.*?)\]', address)
 
 
+def find_supernets(address):
+    return list(address)
+
+
+def find_abas(sequences):
+    return sequences
+
+
+def supports_ssl(address):
+    return True
+
+
+def count_ssl(filename):
+    return 1
+
+
 if __name__ == '__main__':
     print(count_tls('input.txt'))
