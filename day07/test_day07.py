@@ -32,16 +32,16 @@ def test_has_abba():
 
 
 def test_find_supernets():
-    assert find_supernets('abba[mnop]qrst') == ['abba', 'qrst']
-    assert find_supernets('abcd[bddb]xyyx') == ['abcd', 'xyyx']
-    assert find_supernets('aaaa[qwer]tyui') == ['aaaa', 'tyui']
-    assert find_supernets('abba[mnop]qrstabcd[bddb]xyyx') == ['abba', 'qrstabcd', 'xyyx']
+    assert find_supernets('abba[mnop]qrst') == {'abba', 'qrst'}
+    assert find_supernets('abcd[bddb]xyyx') == {'abcd', 'xyyx'}
+    assert find_supernets('aaaa[qwer]tyui') == {'aaaa', 'tyui'}
+    assert find_supernets('abba[mnop]qrstabcd[bddb]xyyx') == {'abba', 'qrstabcd', 'xyyx'}
 
 
 def test_find_abas():
-    assert find_abas(['aba', 'bab', 'xyz']) == ['aba', 'bab']
-    assert find_abas(['zzz']) == []
-    assert find_abas(['zazbz'], ['abc'], ['brb']) == ['zaz', 'zbz', 'brb']
+    assert find_abas(['aba', 'bab', 'xyz']) == {'aba', 'bab'}
+    assert find_abas(['zzz']) == set()
+    assert find_abas(['zazbz', 'abc', 'brb']) == {'zaz', 'zbz', 'brb'}
 
 
 def test_supports_ssl():
@@ -53,3 +53,4 @@ def test_supports_ssl():
 
 def test_count_ssl():
     assert count_ssl('test_input2.txt') == 3
+    assert count_ssl('input.txt') == 260
