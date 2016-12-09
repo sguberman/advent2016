@@ -54,4 +54,4 @@ def decompressed_file_len2(filename, save_final=False, save_tmp=False):
 
 if __name__ == '__main__':
     print(decompressed_file_len('input.txt'))
-    print(decompressed_file_len2('input.txt'))
+    print(decompressed_file_len2('input.txt', save_tmp=True))
