@@ -15,6 +15,7 @@ CASES = [('ADVENT', False, 6),
          ('(25x3)(3x3)ABC(2x3)XY(5x2)PQRSTX(18x9)(3x2)TWO(5x7)SEVEN', True, 445)
          ]
 
+
 @pytest.mark.parametrize('text, recursively, size', CASES)
 def test_decompression_size_examples(text, recursively, size):
     assert decompression_size(text, recursively) == size
