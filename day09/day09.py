@@ -38,5 +38,20 @@ def decompressed_file_len(filename):
     return len(decompressed)
 
 
+def decompressed_file_len2(filename, save_final=False, save_tmp=False):
+    with open(filename, 'r') as f:
+        text = f.read().strip()
+    while '(' in text:
+        text = decompress(text)
+        if save_tmp:
+            with open('temp.txt', 'w') as temp:
+                temp.write(text)
+    if save_final:
+        with open('decompressed_'+filename, 'w') as dec:
+            dec.write(text)
+    return len(text)
+
+
 if __name__ == '__main__':
     print(decompressed_file_len('input.txt'))
+    print(decompressed_file_len2('input.txt'))

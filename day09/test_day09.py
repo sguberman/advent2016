@@ -1,4 +1,5 @@
 from day09 import decompress, parse_marker, decompressed_file_len
+from day09 import decompressed_file_len2
 
 
 def test_decompress():
@@ -21,3 +22,8 @@ def test_parse_marker():
 def test_decompressed_file_len():
     assert decompressed_file_len('test_input2.txt') == 57
     assert decompressed_file_len('input.txt') == 70186
+
+
+def test_decompressed_file_len2():
+    assert decompressed_file_len2('test_input3.txt') == 445
+    assert decompressed_file_len2('test_input4.txt') == 241920
