@@ -32,6 +32,7 @@ def a_star(start, goal):
 
     while open_set:
         current = min(open_set, key=lambda x: f_score[x])
+        print(current)
 
         if current == goal:
             return reconstruct_path(came_from, current)
@@ -112,6 +113,7 @@ def neighbors(node):
           (unless it is with its own generator too)
     """
     current_floor_num = 0  # which floor are we on?
+    available_items = []
     for i, floor in enumerate(node):
         if 'E' in floor:  # find the elevator
             current_floor_num = i
@@ -120,11 +122,19 @@ def neighbors(node):
 
     available_floors = []  # can we move up, down, or both?
     if current_floor_num < (len(node) - 1):
-        available_floors.append(node[current_floor_num + 1])
+        available_floors.append(current_floor_num + 1)
     if current_floor_num > 0:
-        available_floors.append(node[current_floor_num - 1])
+        available_floors.append(current_floor_num - 1)
 
-    return tuple()  # finish me!
+    for floor in available_floors:
+        for payload in (available_items + combinations(available_items, 2)):
+            tentative_floor = ('E',) + node[floor] + payload
+            previous_floor = set(available_items) - set(payload)
+            if is_safe(tentative_floor) and is_safe(previous_floor):
+                try:
+                    yield Node(node[:floor] + tentative_floor + node[floor + 1:])
+                except IndexError:
+                    yield Node(node[:floor] + tentative_floor)
 
 
 def is_safe(floor):
@@ -180,3 +190,18 @@ class Node(tuple):
         fourth floor.
         """
         return cls(tuple(floor.split()) for floor in floors)
+
+
+if __name__ == '__main__':
+    start = Node.fromfloors('E gPr mPr',
+                            'gCo gCu gRu gPu',
+                            'mCo mCu mRu mPu',
+                            '')
+
+    goal = Node.fromfloors('',
+                           ''
+                           ''
+                           'E gPr mPr gCo mCo gCu mCu gRu mRu gPu mPu')
+
+    path = a_star(start, goal)
+    print(len(path))
