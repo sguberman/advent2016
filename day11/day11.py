@@ -1,5 +1,7 @@
 from collections import defaultdict
-from itertools import combinations
+from itertools import combinations, chain
+import logging
+logging.basicConfig(level=logging.DEBUG)
 
 
 def a_star(start, goal):
@@ -33,7 +35,7 @@ def a_star(start, goal):
 
     while open_set:
         current = min(open_set, key=lambda x: f_score[x])
-        print(current)
+        logging.debug(f'open_set loop current: {current}')
 
         if current == goal:
             return reconstruct_path(came_from, current)
@@ -118,7 +120,7 @@ def neighbors(node):
     for i, floor in enumerate(node):
         if 'E' in floor:  # find the elevator
             current_floor_num = i
-            available_items = set(floor)  # what's here?
+            available_items = set(floor) - {'E'}  # what's here?
             break
 
     available_floors = []  # can we move up, down, or both?
@@ -126,16 +128,29 @@ def neighbors(node):
         available_floors.append(current_floor_num + 1)
     if current_floor_num > 0:
         available_floors.append(current_floor_num - 1)
+    logging.debug(f'available_floors: {available_floors}')
 
     for floor in available_floors:
-        for payload in (available_items + list(combinations(available_items, 2))):
+        logging.debug(f' floor: {floor}')
+        for payload in possible_payloads(available_items):
+            logging.debug(f'  payload: {payload}')
             tentative_floor = ('E',) + node[floor] + payload
+            logging.debug(f'  tentative_floor: {tentative_floor}')
             previous_floor = set(available_items) - set(payload)
+            logging.debug(f'  previous_floor: {previous_floor}')
             if is_safe(tentative_floor) and is_safe(previous_floor):
+                below_floors = node[:floor]
+                below_floors = clear_floors(below_floors, tentative_floor)
+                logging.debug(f'   below_floors: {below_floors}')
                 try:
-                    yield Node(node[:floor] + tentative_floor + node[floor + 1:])
+                    above_floors = node[floor + 1:]
                 except IndexError:
-                    yield Node(node[:floor] + tentative_floor)
+                    above_floors = tuple()
+                above_floors = clear_floors(above_floors, tentative_floor)
+                logging.debug(f'   above_floors: {above_floors}')
+                new = Node(below_floors + (tentative_floor,) + above_floors)
+                logging.debug(f'new Node: {new}')
+                yield new
 
 
 def is_safe(floor):
@@ -149,6 +164,17 @@ def is_safe(floor):
         return False
     else:
         return True
+
+
+def possible_payloads(available_items):
+    for item in available_items:
+        yield (item,)
+    for combo in combinations(available_items, 2):
+        yield combo
+
+
+def clear_floors(floors, items):
+    return tuple(tuple(set(floor) - {'E'} - set(items)) for floor in floors)
 
 
 class Node(tuple):
