@@ -12,7 +12,8 @@ def a_star(start, goal):
 
     # the set of currently discovered nodes that are not already evaluated
     # initially only the start node is known
-    open_set = {start}
+    open_set = set()
+    open_set.add(start)
 
     # for each node, which node it can most efficiently be reached from
     # if a node can be reached from many nodes, came_from will eventually
@@ -127,7 +128,7 @@ def neighbors(node):
         available_floors.append(current_floor_num - 1)
 
     for floor in available_floors:
-        for payload in (available_items + combinations(available_items, 2)):
+        for payload in (available_items + list(combinations(available_items, 2))):
             tentative_floor = ('E',) + node[floor] + payload
             previous_floor = set(available_items) - set(payload)
             if is_safe(tentative_floor) and is_safe(previous_floor):
