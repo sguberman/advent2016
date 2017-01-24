@@ -126,10 +126,7 @@ def neighbors(node):
             if is_safe(new_floor) and is_safe(leftover_floor):
                 below_floors = node[:node.index(floor)]
                 below_floors = clear_floors(below_floors, new_floor)
-                try:
-                    above_floors = node[node.index(floor) + 1:]
-                except IndexError:
-                    above_floors = tuple()
+                above_floors = node[node.index(floor) + 1:]
                 above_floors = clear_floors(above_floors, new_floor)
                 yield Node(below_floors + (new_floor,) + above_floors)
 
@@ -155,7 +152,7 @@ def possible_payloads(available_items):
 
 
 def clear_floors(floors, items):
-    return tuple(tuple(set(floor) - {'E'} - set(items)) for floor in floors)
+    return tuple(tuple(sorted(set(floor) - {'E'} - set(items))) for floor in floors)
 
 
 class Node(tuple):
@@ -195,29 +192,3 @@ class Node(tuple):
                 if floor_num > 0:
                     other_floors.append(self[floor_num - 1])
                 return contents, other_floors
-
-
-if __name__ == '__main__':
-    """
-    start = Node.fromfloors('E gPr mPr',
-                            'gCo gCu gRu gPu',
-                            'mCo mCu mRu mPu',
-                            '')
-
-    goal = Node.fromfloors('',
-                           ''
-                           ''
-                           'E gPr mPr gCo mCo gCu mCu gRu mRu gPu mPu')
-    """
-    start = Node.fromfloors('E mH mLi', 'gH', 'gLi', '')
-    print('Start:')
-    print(start)
-    goal = Node.fromfloors('', '', '', 'E mH gH mLi gLi')
-    print('Goal:')
-    print(goal)
-    path = a_star(start, goal)
-    print('Path:')
-    for i, node in enumerate(reversed(path)):
-        print(f'Step {i}:')
-        print(node)
-    print(len(path) - 1)
