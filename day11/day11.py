@@ -35,8 +35,6 @@ def a_star(start, goal):
 
     while open_set:
         log = f'os: {len(open_set)}\tcs: {len(closed_set)}\t'
-        log += f'cf: {len(came_from)}\tgs: {min(g_score.values())}\t'
-        log += f'fs: {min(f_score.values())}'
         logging.info(log)
         current = min(open_set, key=lambda x: f_score[x])
         logging.debug(f'open_set loop current: {current}')
@@ -98,7 +96,7 @@ def heuristic_cost_estimate(node, goal):
         for item in floor:
             distances[item] = abs(goal_locations[item] - j)
 
-    return sum(dist / 2 for dist in distances.values())
+    return sum(dist for dist in distances.values())
 
 
 def dist_between(node1, node2):
@@ -119,42 +117,21 @@ def neighbors(node):
         - Can't leave a microchip on a floor with another generator,
           (unless it is with its own generator too)
     """
-    current_floor_num = 0  # which floor are we on?
-    available_items = []
-    for i, floor in enumerate(node):
-        if 'E' in floor:  # find the elevator
-            current_floor_num = i
-            available_items = set(floor) - {'E'}  # what's here?
-            break
+    contents, other_floors = node.status()
 
-    available_floors = []  # can we move up, down, or both?
-    if current_floor_num < (len(node) - 1):
-        available_floors.append(current_floor_num + 1)
-    if current_floor_num > 0:
-        available_floors.append(current_floor_num - 1)
-    logging.debug(f'available_floors: {available_floors}')
-
-    for floor in available_floors:
-        logging.debug(f' floor: {floor}')
-        for payload in possible_payloads(available_items):
-            logging.debug(f'  payload: {payload}')
-            tentative_floor = ('E',) + node[floor] + payload
-            logging.debug(f'  tentative_floor: {tentative_floor}')
-            previous_floor = set(available_items) - set(payload)
-            logging.debug(f'  previous_floor: {previous_floor}')
-            if is_safe(tentative_floor) and is_safe(previous_floor):
-                below_floors = node[:floor]
-                below_floors = clear_floors(below_floors, tentative_floor)
-                logging.debug(f'   below_floors: {below_floors}')
+    for floor in other_floors:
+        for payload in possible_payloads(contents):
+            new_floor = tuple(sorted(('E',) + floor + payload))
+            leftover_floor = tuple(sorted(tuple(set(contents) - set(payload))))
+            if is_safe(new_floor) and is_safe(leftover_floor):
+                below_floors = node[:node.index(floor)]
+                below_floors = clear_floors(below_floors, new_floor)
                 try:
-                    above_floors = node[floor + 1:]
+                    above_floors = node[node.index(floor) + 1:]
                 except IndexError:
                     above_floors = tuple()
-                above_floors = clear_floors(above_floors, tentative_floor)
-                logging.debug(f'   above_floors: {above_floors}')
-                new = Node(below_floors + (tentative_floor,) + above_floors)
-                logging.debug(f'new Node: {new}')
-                yield new
+                above_floors = clear_floors(above_floors, new_floor)
+                yield Node(below_floors + (new_floor,) + above_floors)
 
 
 def is_safe(floor):
@@ -202,7 +179,22 @@ class Node(tuple):
         return cls(tuple(sorted(floor.split())) for floor in floors)
 
     def __repr__(self):
-        return '\n'.join(str(floor) for floor in reversed(self))
+        return '\n'.join(': '+' '.join(floor) for floor in reversed(self))
+
+    def status(self):
+        """
+        Get the contents of the current floor and that of the floors
+        immediately above and below.
+        """
+        other_floors = []
+        for floor_num, items in enumerate(self):
+            if 'E' in items:  # find the elevator
+                contents = tuple(sorted(tuple(set(items) - {'E'})))
+                if floor_num < (len(self) - 1):
+                    other_floors.append(self[floor_num + 1])
+                if floor_num > 0:
+                    other_floors.append(self[floor_num - 1])
+                return contents, other_floors
 
 
 if __name__ == '__main__':
@@ -224,5 +216,8 @@ if __name__ == '__main__':
     print('Goal:')
     print(goal)
     path = a_star(start, goal)
-    print(path)
-    print(len(path))
+    print('Path:')
+    for i, node in enumerate(reversed(path)):
+        print(f'Step {i}:')
+        print(node)
+    print(len(path) - 1)

@@ -17,7 +17,7 @@ class TestNode:
         assert len(self.goal) == 4
 
     def test_heuristic_cost_estimate(self):
-        assert heuristic_cost_estimate(self.start, self.goal) == 32
+        assert heuristic_cost_estimate(self.start, self.goal) == 12
 
     def test_is_safe(self):
         for floor in self.start:
