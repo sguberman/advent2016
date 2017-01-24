@@ -1,7 +1,7 @@
 from collections import defaultdict
 from itertools import combinations, chain
 import logging
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 
 def a_star(start, goal):
@@ -24,16 +24,20 @@ def a_star(start, goal):
 
     # for each node, the cost of getting from the start node to that node
     # the cost of going from start to start is zero
-    g_score = defaultdict(lambda: 9999)
+    g_score = defaultdict(lambda: 99999)
     g_score[start] = 0
 
     # for each node, the total cost of getting from the start node to the goal
     # by passing that node (partly known, partly heuristic)
     # completely heuristic for start node
-    f_score = defaultdict(lambda: 9999)
+    f_score = defaultdict(lambda: 99999)
     f_score[start] = heuristic_cost_estimate(start, goal)
 
     while open_set:
+        log = f'os: {len(open_set)}\tcs: {len(closed_set)}\t'
+        log += f'cf: {len(came_from)}\tgs: {min(g_score.values())}\t'
+        log += f'fs: {min(f_score.values())}'
+        logging.info(log)
         current = min(open_set, key=lambda x: f_score[x])
         logging.debug(f'open_set loop current: {current}')
 
@@ -92,9 +96,9 @@ def heuristic_cost_estimate(node, goal):
     distances = {}
     for j, floor in enumerate(node):
         for item in floor:
-            distances[item] = goal_locations[item] - j
+            distances[item] = abs(goal_locations[item] - j)
 
-    return sum(dist**2 for dist in distances.values())
+    return sum(dist / 2 for dist in distances.values())
 
 
 def dist_between(node1, node2):
@@ -179,34 +183,13 @@ def clear_floors(floors, items):
 
 class Node(tuple):
     """
-    I needed a tuple of tuples that doesn't care about order within the
-    nested tuples, but does care about the order of the first-level tuples.
-    That way, when checking for equivalence with the goal condition the order
-    of the items on each floor doesn't matter, but the order of the floors
-    themselves does matter. Can't use a set for each floor because sets are
-    not hashable, thus can't be used in sets or dictionaries.
-
-    There might be a better way to do this, but it was fun to learn about
-    inheritance and overriding the equivalence and hashing operations.
+    This is just a tuple with a special way to instantiate.
+    Pass in a series of strings, get back a tuple of sorted tuples.
     """
-    def __eq__(self, other):
-        """
-        Order of items on each floor shouldn't matter, but floor order should.
-        """
-        return all(set(a) == set(b) for a, b in zip(self, other))
-
-    def __hash__(self):
-        """
-        Sort the items on each floor for hash stability. Perhaps it would
-        just be better to sort each floor during instantiation and leave hash
-        alone.
-        """
-        return hash(tuple(sorted(item)) for item in self)
-
     @classmethod
     def fromfloors(cls, *floors):
         """
-        Create a Node object from a list of strings describing each floor.
+        Create a Node object from a series of strings describing each floor.
 
         >>> Node.fromfloors('E mH mLi', 'gH', 'gLi', '')
         (('E', 'mH', 'mLi'), ('gH',), ('gLi',), ())
@@ -216,10 +199,14 @@ class Node(tuple):
         second floor; a Lithium generator on the third floor; nothing on the
         fourth floor.
         """
-        return cls(tuple(floor.split()) for floor in floors)
+        return cls(tuple(sorted(floor.split())) for floor in floors)
+
+    def __repr__(self):
+        return '\n'.join(str(floor) for floor in reversed(self))
 
 
 if __name__ == '__main__':
+    """
     start = Node.fromfloors('E gPr mPr',
                             'gCo gCu gRu gPu',
                             'mCo mCu mRu mPu',
@@ -229,6 +216,13 @@ if __name__ == '__main__':
                            ''
                            ''
                            'E gPr mPr gCo mCo gCu mCu gRu mRu gPu mPu')
-
+    """
+    start = Node.fromfloors('E mH mLi', 'gH', 'gLi', '')
+    print('Start:')
+    print(start)
+    goal = Node.fromfloors('', '', '', 'E mH gH mLi gLi')
+    print('Goal:')
+    print(goal)
     path = a_star(start, goal)
+    print(path)
     print(len(path))
