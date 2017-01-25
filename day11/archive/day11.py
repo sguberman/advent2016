@@ -96,7 +96,7 @@ def heuristic_cost_estimate(node, goal):
         for item in floor:
             distances[item] = abs(goal_locations[item] - j)
 
-    return sum(dist / 2 for dist in distances.values())
+    return sum(dist / 6 for dist in distances.values())
 
 
 def dist_between(node1, node2):
