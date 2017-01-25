@@ -1,7 +1,7 @@
 from collections import defaultdict
 from itertools import combinations, chain
 import logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.WARNING)
 
 
 def a_star(start, goal):
@@ -45,7 +45,7 @@ def a_star(start, goal):
         open_set.remove(current)
         closed_set.add(current)
 
-        for neighbor in neighbors(current):
+        for neighbor in neighbors(current, goal):
             if neighbor in closed_set:  # ignore already evaluated
                 continue
 
@@ -96,7 +96,7 @@ def heuristic_cost_estimate(node, goal):
         for item in floor:
             distances[item] = abs(goal_locations[item] - j)
 
-    return sum(dist for dist in distances.values())
+    return sum(dist / 2 for dist in distances.values())
 
 
 def dist_between(node1, node2):
@@ -107,7 +107,7 @@ def dist_between(node1, node2):
     return 1
 
 
-def neighbors(node):
+def neighbors(node, goal):
     """
     Come up with all the possible next moves based on current status.
 
@@ -118,17 +118,18 @@ def neighbors(node):
           (unless it is with its own generator too)
     """
     contents, other_floors = node.status()
-
+    nodes = []
     for floor in other_floors:
         for payload in possible_payloads(contents):
             new_floor = tuple(sorted(('E',) + floor + payload))
-            leftover_floor = tuple(sorted(tuple(set(contents) - set(payload))))
+            leftover_floor = tuple(sorted(set(contents) - set(payload)))
             if is_safe(new_floor) and is_safe(leftover_floor):
                 below_floors = node[:node.index(floor)]
                 below_floors = clear_floors(below_floors, new_floor)
                 above_floors = node[node.index(floor) + 1:]
                 above_floors = clear_floors(above_floors, new_floor)
-                yield Node(below_floors + (new_floor,) + above_floors)
+                nodes.append(Node(below_floors + (new_floor,) + above_floors))
+    return sorted(nodes, key=lambda x: heuristic_cost_estimate(x, goal))
 
 
 def is_safe(floor):
