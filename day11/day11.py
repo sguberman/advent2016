@@ -1,4 +1,5 @@
 import heapq
+import logging
 from collections import namedtuple
 from itertools import combinations, product
 
@@ -6,6 +7,9 @@ from itertools import combinations, product
 class PriorityQueue:
     def __init__(self):
         self.elements = []
+
+    def __len__(self):
+        return len(self.elements)
 
     def empty(self):
         return len(self.elements) == 0
@@ -26,9 +30,12 @@ class Search:
         cost_so_far = {start: 0}
 
         while not frontier.empty():
+            logging.debug(f'f: {len(frontier)} cf: {len(came_from)} '
+                          f'csf: {len(cost_so_far)}')
             current = frontier.get()
 
             if current == goal:
+                logging.debug('breaking for goal')
                 break
 
             for new in current.neighbors():
@@ -39,6 +46,7 @@ class Search:
                     frontier.put(new, priority)
                     came_from[new] = current
 
+        logging.debug(f'frontier: {frontier.elements}')
         return came_from, cost_so_far
 
     @staticmethod
@@ -61,7 +69,7 @@ class Search:
         """
         p_state = point.to_state()
         g_state = goal.to_state()
-        return sum(abs(p - g) for p, g in zip(p_state, g_state)) / 2
+        return sum(abs(p - g) for p, g in zip(p_state, g_state)) / 4
 
 
 class Point(namedtuple('Point', 'elevator microchips generators')):
@@ -160,3 +168,29 @@ class Point(namedtuple('Point', 'elevator microchips generators')):
         The cost to move is always 1 in this puzzle.
         """
         return 1
+
+
+if __name__ == '__main__':
+    logging.basicConfig(level=logging.DEBUG)
+
+    def example():
+        start = Point(elevator=0, microchips=(0, 0), generators=(1, 2))
+        goal = Point(elevator=3, microchips=(3, 3), generators=(3, 3))
+        return start, goal
+
+    def part1():
+        start = Point(elevator=0,
+                      microchips=(0, 2, 2, 2, 2), generators=(0, 1, 1, 1, 1))
+        goal = Point(elevator=3,
+                     microchips=(3, 3, 3, 3, 3), generators=(3, 3, 3, 3, 3))
+        return start, goal
+
+    start, goal = part1()
+
+    came_from, cost_so_far = Search.a_star(start, goal)
+    path = Search.reconstruct_path(came_from, start, goal)
+
+    for i, p in enumerate(path):
+        print(p)
+
+    print(len(path) - 1)
