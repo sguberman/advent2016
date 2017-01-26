@@ -17,7 +17,7 @@ class PriorityQueue:
         return heapq.heappop(self.elements)[1]
 
 
-def a_star_search(graph, start, goal):
+def a_star_search(start, goal):
     frontier = PriorityQueue()
     frontier.put(start, 0)
     came_from = {start: None}

@@ -1,4 +1,4 @@
-from day11 import Point
+from day11 import Point, a_star_search, reconstruct_path
 
 
 class TestPoint:
@@ -71,3 +71,15 @@ class TestPoint:
         assert self.step3.is_valid()
         assert not self.danger.is_valid()
         assert not self.lonely.is_valid()
+
+
+def test_example():
+    start = Point(elevator=0, microchips=(0, 0), generators=(1, 2))
+    goal = Point(elevator=3, microchips=(3, 3), generators=(3, 3))
+
+    came_from, cost_so_far = a_star_search(start, goal)
+    path = reconstruct_path(came_from, start, goal)
+
+    for i, p in enumerate(path):
+        print(p)
+    assert len(path) - 1 == 11
