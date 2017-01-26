@@ -1,12 +1,6 @@
 import heapq
 from collections import namedtuple
-
-
-#Point = namedtuple('Point', 'elevator microchips generators')
-# ex: start = Point(elevator=0, microchips=(0, 0), generators=(1, 2))
-# This is how a node in the graph is represented.
-# Each integer denotes floors for each type of component.
-# The microchips and generators are in the same order.
+from itertools import combinations, product
 
 
 class PriorityQueue:
@@ -57,10 +51,65 @@ def reconstruct_path(came_from, start, goal):
 
 
 class Point(namedtuple('Point', 'elevator microchips generators')):
-    def neighbors(self):
-        pass
+    """
+    This is how a node in the graph is represented.
+    Each integer denotes floors for each type of component.
+    The microchips and generators are in the same order.
 
-    def in_bounds(self, lower, upper):
+    ex: start = Point(elevator=0, microchips=(0, 0), generators=(1, 2))
+    This describes the start condition for the example puzzle.
+    """
+    @classmethod
+    def from_state(cls, state):
+        """
+        Construct a Point from a state list of integers.
+        This is used by the neighbors method.
+
+        ex: Point.from_state([0, 0, 0, 1, 2])
+        This describes the start condition for the example puzzle.
+        """
+        elevator, *items = state
+        pairs = len(items) // 2
+        microchips, generators = tuple(items[:pairs]), tuple(items[pairs:])
+        return cls(elevator=elevator,
+                   microchips=microchips, generators=generators)
+
+    def neighbors(self):
+        """
+        Find all the possible moves from a current position.
+        Rules from the puzzle:
+        -Use the elevator to move one or two pieces only,
+        -The elevator moves one floor up or down at a time.
+
+        Return a list of new valid points in descending order.
+        """
+        elevator, microchips, generators = self
+        state = [*microchips, *generators]  # ex: 0 0 0 1 2
+        states = []
+        idxs = [i for i, x in enumerate(state) if x == elevator]
+        combos = combinations(idxs, 2)
+        for combo in combos:  # move two pieces up
+            states.append([elevator + 1] + [x + 1 if i in combo else x
+                                            for i, x in enumerate(state)])
+        for idx, dir in product(idxs, (1, -1)):  # move one piece up or down
+            states.append([elevator + dir] + [x + dir if i == idx else x
+                                              for i, x in enumerate(state)])
+
+        points = [Point.from_state(state) for state in states]
+        return sorted((p for p in points if p.is_valid()), reverse=True)
+
+    def is_valid(self):
+        """
+        Check that a point meets all puzzle criteria.
+        """
+        return (self.elevator_is_ok() and
+                self.microchips_are_safe() and
+                self.in_bounds())  # boundary is hardcoded :(
+
+    def in_bounds(self, lower=0, upper=4):
+        """
+        All items in the point are on a floor in [lower, upper).
+        """
         elevator, microchips, generators = self
         return (lower <= elevator < upper and
                 all(lower <= m < upper for m in microchips) and
@@ -88,6 +137,9 @@ class Point(namedtuple('Point', 'elevator microchips generators')):
         return (elevator in microchips) or (elevator in generators)
 
     def cost(self, other):
+        """
+        The cost to move is always 1 in this puzzle.
+        """
         return 1
 
 
