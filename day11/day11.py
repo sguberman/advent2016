@@ -118,7 +118,7 @@ class Point(namedtuple('Point', 'elevator microchips generators')):
         combos = combinations(idxs, 2)
         for combo, dir in product(combos, (-1, 1)):  # move two pieces up or down
             states.append([elevator + dir] + [x + dir if i in combo else x
-                                            for i, x in enumerate(items)])
+                                              for i, x in enumerate(items)])
         for idx, dir in product(idxs, (1, -1)):  # move one piece up or down
             states.append([elevator + dir] + [x + dir if i == idx else x
                                               for i, x in enumerate(items)])
