@@ -109,6 +109,10 @@ class TestSearch:
                     microchips=(0, 2, 2, 2, 2), generators=(0, 1, 1, 1, 1))
     p1goal = Point(elevator=3,
                    microchips=(3, 3, 3, 3, 3), generators=(3, 3, 3, 3, 3))
+    p2start = Point(elevator=0, microchips=(0, 2, 2, 2, 2, 0, 0),
+                    generators=(0, 1, 1, 1, 1, 0, 0))
+    p2goal = Point(elevator=3, microchips=(3, 3, 3, 3, 3, 3, 3),
+                   generators=(3, 3, 3, 3, 3, 3, 3))
 
     def test_heuristic(self):
         assert Search.heuristic(self.start, self.goal) <= 11
@@ -128,3 +132,11 @@ class TestSearch:
         for i, p in enumerate(path):
             print(i, p)
         assert len(path) - 1 == 33
+
+    def test_part2(self):
+        came_from, cost_so_far = Search.a_star(self.p2start, self.p2goal)
+        path = Search.reconstruct_path(came_from, self.p2start, self.p2goal)
+
+        for i, p in enumerate(path):
+            print(i, p)
+        assert len(path) - 1 == 57

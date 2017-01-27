@@ -30,8 +30,8 @@ class Search:
         cost_so_far = {start: 0}
 
         while not frontier.empty():
-            logging.debug(f'f: {len(frontier)} cf: {len(came_from)} '
-                          f'csf: {len(cost_so_far)}')
+            logging.info(f'f: {len(frontier)} cf: {len(came_from)} '
+                         f'csf: {len(cost_so_far)}')
             current = frontier.get()
             logging.debug(f'{current}')
 
@@ -172,7 +172,7 @@ class Point(namedtuple('Point', 'elevator microchips generators')):
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
 
     def example():
         start = Point(elevator=0, microchips=(0, 0), generators=(1, 2))
@@ -186,12 +186,19 @@ if __name__ == '__main__':
                      microchips=(3, 3, 3, 3, 3), generators=(3, 3, 3, 3, 3))
         return start, goal
 
-    start, goal = part1()
+    def part2():
+        start = Point(elevator=0, microchips=(0, 2, 2, 2, 2, 0, 0),
+                      generators=(0, 1, 1, 1, 1, 0, 0))
+        goal = Point(elevator=3, microchips=(3, 3, 3, 3, 3, 3, 3),
+                     generators=(3, 3, 3, 3, 3, 3, 3))
+        return start, goal
+
+    start, goal = part2()
 
     came_from, cost_so_far = Search.a_star(start, goal)
     path = Search.reconstruct_path(came_from, start, goal)
 
     for i, p in enumerate(path):
-        print(p)
+        print(i, p)
 
     print(len(path) - 1)
