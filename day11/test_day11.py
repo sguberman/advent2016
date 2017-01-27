@@ -10,6 +10,8 @@ class TestPoint:
     step1 = Point(elevator=1, microchips=(1, 0), generators=(1, 2))
     step2 = Point(elevator=2, microchips=(2, 0), generators=(2, 2))
     step3 = Point(elevator=1, microchips=(1, 0), generators=(2, 2))
+    p1goal = Point(elevator=3,
+                   microchips=(3, 3, 3, 3, 3), generators=(3, 3, 3, 3, 3))
 
     def test_in_bounds(self):
         assert self.start.in_bounds(0, 4)
@@ -18,16 +20,19 @@ class TestPoint:
         assert not self.goal.in_bounds(0, 3)
         assert not self.start.in_bounds(0, 2)
         assert self.goal.in_bounds(3, 4)
+        assert self.p1goal.in_bounds(0, 4)
 
     def test_microchips_are_safe(self):
         assert self.start.microchips_are_safe()
         assert self.goal.microchips_are_safe()
         assert not self.danger.microchips_are_safe()
+        assert self.p1goal.microchips_are_safe()
 
     def test_elevator_is_ok(self):
         assert self.start.elevator_is_ok()
         assert self.goal.elevator_is_ok()
         assert not self.lonely.elevator_is_ok()
+        assert self.p1goal.elevator_is_ok()
 
     def test_neighbors(self):
         start_neighbors = (
@@ -59,9 +64,18 @@ class TestPoint:
         )
         assert self.step2.neighbors() == sorted(step2_neighbors, reverse=True)
 
+        step3_neighbors = (
+            self.step2,
+            Point(elevator=0, microchips=(0, 0), generators=(2, 2)),
+        )
+        assert self.step3.neighbors() == sorted(step3_neighbors, reverse=True)
+
     def test_from_state(self):
         assert Point.from_state([0, 0, 0, 1, 2]) == self.start
         assert Point.from_state([3, 3, 3, 3, 3]) == self.goal
+        assert Point.from_state([3,
+                                 3, 3, 3, 3, 3,
+                                 3, 3, 3, 3, 3]) == self.p1goal
 
     def test_is_valid(self):
         assert self.start.is_valid()
@@ -71,10 +85,14 @@ class TestPoint:
         assert self.step3.is_valid()
         assert not self.danger.is_valid()
         assert not self.lonely.is_valid()
+        assert self.p1goal.is_valid()
 
     def test_to_state(self):
         assert self.start.to_state() == [0, 0, 0, 1, 2]
         assert self.goal.to_state() == [3, 3, 3, 3, 3]
+        assert self.p1goal.to_state() == [3,
+                                          3, 3, 3, 3, 3,
+                                          3, 3, 3, 3, 3]
 
 
 class TestSearch:

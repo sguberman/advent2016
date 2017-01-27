@@ -12,7 +12,7 @@ class PriorityQueue:
         return len(self.elements)
 
     def empty(self):
-        return len(self.elements) == 0
+        return len(self) == 0
 
     def put(self, item, priority):
         heapq.heappush(self.elements, (priority, item))
@@ -33,6 +33,7 @@ class Search:
             logging.debug(f'f: {len(frontier)} cf: {len(came_from)} '
                           f'csf: {len(cost_so_far)}')
             current = frontier.get()
+            logging.debug(f'{current}')
 
             if current == goal:
                 logging.debug('breaking for goal')
@@ -69,7 +70,7 @@ class Search:
         """
         p_state = point.to_state()
         g_state = goal.to_state()
-        return sum(abs(p - g) for p, g in zip(p_state, g_state)) / 4
+        return sum(abs(p - g) for p, g in zip(p_state, g_state)) / 2
 
 
 class Point(namedtuple('Point', 'elevator microchips generators')):
