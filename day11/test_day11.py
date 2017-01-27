@@ -44,6 +44,10 @@ class TestPoint:
         goal_neighbors = (
             Point(elevator=2, microchips=(2, 3), generators=(3, 3)),
             Point(elevator=2, microchips=(3, 2), generators=(3, 3)),
+            Point(elevator=2, microchips=(3, 2), generators=(3, 2)),
+            Point(elevator=2, microchips=(2, 3), generators=(2, 3)),
+            Point(elevator=2, microchips=(2, 2), generators=(3, 3)),
+            Point(elevator=2, microchips=(3, 3), generators=(2, 2)),
         )
         assert self.goal.neighbors() == sorted(goal_neighbors, reverse=True)
 
@@ -56,11 +60,13 @@ class TestPoint:
 
         step2_neighbors = (
             self.step3,
+            self.step1,
             Point(elevator=3, microchips=(3, 0), generators=(2, 2)),
             Point(elevator=3, microchips=(3, 0), generators=(3, 2)),
             Point(elevator=3, microchips=(2, 0), generators=(3, 3)),
             Point(elevator=3, microchips=(2, 0), generators=(2, 3)),
             Point(elevator=1, microchips=(2, 0), generators=(2, 1)),
+            Point(elevator=1, microchips=(2, 0), generators=(1, 1)),
         )
         assert self.step2.neighbors() == sorted(step2_neighbors, reverse=True)
 
