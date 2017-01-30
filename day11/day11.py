@@ -30,10 +30,9 @@ class Search:
         cost_so_far = {start: 0}
 
         while not frontier.empty():
-            logging.info(f'f: {len(frontier)} cf: {len(came_from)} '
-                         f'csf: {len(cost_so_far)}')
+            logging.info('f: {} cf: {} '.format(len(frontier), len(came_from)))
             current = frontier.get()
-            logging.debug(f'{current}')
+            logging.debug('{}'.format(current))
 
             if current == goal:
                 logging.debug('breaking for goal')
@@ -47,7 +46,7 @@ class Search:
                     frontier.put(new, priority)
                     came_from[new] = current
 
-        logging.debug(f'frontier: {frontier.elements}')
+        logging.debug('frontier: {}'.format(frontier.elements))
         return came_from, cost_so_far
 
     @staticmethod
@@ -101,7 +100,7 @@ class Point(namedtuple('Point', 'elevator microchips generators')):
         """
         Transform into an ordered list of floors for each component.
         """
-        return [self.elevator, *self.microchips, *self.generators]
+        return [self.elevator] + list(self.microchips) + list(self.generators)
 
     def neighbors(self):
         """
