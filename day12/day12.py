@@ -49,7 +49,7 @@ class AssemBunny:
 
 if __name__ == '__main__':
     instructions = open('input.txt').readlines()
-    registers = {'a': 0, 'b': 0, 'c': 0, 'd': 0}
+    registers = {'a': 0, 'b': 0, 'c': 1, 'd': 0}
     asm = AssemBunny(instructions, registers)
     results = asm.execute()
     print(results)
