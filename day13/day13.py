@@ -1,6 +1,7 @@
 import heapq
 import logging
 from collections import namedtuple
+from itertools import product
 
 
 class PriorityQueue:
@@ -121,3 +122,20 @@ if __name__ == '__main__':
         print(point)
 
     print(len(path) - 1)
+
+    goalxs = range(0, 51)
+    goalys = range(0, 51)
+    goals = (Point(x, y, 1364) for (x, y) in product(goalxs, goalys))
+
+    total = 0
+    for goal in goals:
+        if goal.is_wall():
+            continue
+        came_from, cost_so_far = Search.a_star(start, goal)
+        try:
+            if len(Search.reconstruct_path(came_from, start, goal)) <= 50:
+                total += 1
+        except KeyError:
+            continue
+
+    print(total + 1)
