@@ -1,5 +1,6 @@
 import pytest
-from day14 import hash_hex, first_triple, has_consecutive_digit, is_key
+from day14 import (hash_hex, first_triple, has_consecutive_digit, is_key,
+                   generate_n_keys)
 
 
 @pytest.mark.parametrize('salt,idx,expected', [
@@ -26,7 +27,6 @@ def test_has_consectutive_digit(salt, idx, digit):
     assert has_consecutive_digit(hash_hex(salt, idx), digit)
 
 
-
 @pytest.mark.parametrize('salt,idx', [
     pytest.mark.xfail(('abc', 18)),
     ('abc', 39),
@@ -36,3 +36,11 @@ def test_has_consectutive_digit(salt, idx, digit):
 def test_is_key(salt, idx):
     result, hashes = is_key(salt, idx, hashes=[])
     assert result
+
+
+def test_generate_n_keys():
+    keys = [key for key in  generate_n_keys('abc', n=64)]
+    assert len(keys) == 64
+    key, idx = keys[-1]
+    print(idx, key)
+    assert idx == 22728
