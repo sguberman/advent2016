@@ -1,5 +1,5 @@
 import pytest
-from day15 import Disc
+from day15 import Disc, Maze
 
 
 @pytest.mark.parametrize('t,expected', [
@@ -34,4 +34,13 @@ def test_Disc_at_time(t, expected):
     ('Disc #6 has 19 positions; at time=0, it is at position 17.', Disc(19, 17)),
 ])
 def test_Disc_from_input(line, expected):
-    assert Disc.from_input(line).at_time(0) == expected.at_time(0)
+    assert Disc.from_input(line) == expected
+
+
+def test_Maze():
+    assert Maze('test_input.txt').discs == [Disc(5, 4), Disc(2, 1)]
+
+
+def test_Maze_solve():
+    assert Maze('test_input.txt').solve() == 5
+    assert Maze('input.txt').solve() == 122318
