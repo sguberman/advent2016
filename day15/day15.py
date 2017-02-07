@@ -5,3 +5,9 @@ class Disc:
 
     def at_time(self, time):
         return (self.start + time) % self.positions
+
+    @classmethod
+    def from_input(cls, line):
+        tokens = line.split()
+        positions, start = map(int, (tokens[3], tokens[-1][:-1]))
+        return cls(positions, start)
