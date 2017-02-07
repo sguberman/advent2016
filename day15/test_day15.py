@@ -44,3 +44,6 @@ def test_Maze():
 def test_Maze_solve():
     assert Maze('test_input.txt').solve() == 5
     assert Maze('input.txt').solve() == 122318
+    part2 = Maze('input.txt')
+    part2.discs.append(Disc(11, 0))
+    assert part2.solve() == 3208583
