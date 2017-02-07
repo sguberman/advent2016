@@ -1,6 +1,7 @@
 class Disc:
     def __init__(self, positions, start):
-        pass
+        self.positions = positions
+        self.start = start
 
     def at_time(self, time):
-        return 0
+        return (self.start + time) % self.positions
