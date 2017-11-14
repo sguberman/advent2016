@@ -7,8 +7,14 @@ def checksum(data):
     return ''.join('1' if a == b else '0' for a, b in zip(data[::2], data[1::2]))
 
 
-def solve(length, initial_state):
-    raise NotImplementedError
+def solve(length, data):
+    while len(data) < length:
+        data = dragon(data)
+    data = data[:length]
+    check = checksum(data)
+    while len(check) % 2 == 0:
+        check = checksum(check)
+    return check
 
 
 if __name__ == '__main__':
