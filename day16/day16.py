@@ -1,5 +1,6 @@
 def dragon(a):
-    raise NotImplementedError
+    b = ''.join('1' if x == '0' else '0' for x in reversed(a))
+    return a + '0' + b
 
 
 def checksum(data):
