@@ -1,5 +1,3 @@
-import pytest
-
 from day16 import dragon, checksum, solve
 
 
@@ -19,4 +17,3 @@ def test_solve():
     assert solve(20, '10000') == '01100'
     assert solve(272, '01111010110010011') == '00100111000101111'
     assert solve(35651584, '01111010110010011') == '11101110011100110'
-

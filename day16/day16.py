@@ -4,7 +4,8 @@ def dragon(a):
 
 
 def checksum(data):
-    return ''.join('1' if a == b else '0' for a, b in zip(data[::2], data[1::2]))
+    return ''.join('1' if a == b else '0'
+                   for a, b in zip(data[::2], data[1::2]))
 
 
 def solve(length, data):
@@ -20,4 +21,3 @@ def solve(length, data):
 if __name__ == '__main__':
     print(solve(272, '01111010110010011'))
     print(solve(35651584, '01111010110010011'))
-
