@@ -17,4 +17,5 @@ def test_checksum():
 
 def test_solve():
     assert solve(20, '10000') == '01100'
+    assert solve(272, '01111010110010011') == '00100111000101111'
 
