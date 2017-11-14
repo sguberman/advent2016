@@ -19,4 +19,5 @@ def solve(length, data):
 
 if __name__ == '__main__':
     print(solve(272, '01111010110010011'))
+    print(solve(35651584, '01111010110010011'))
 
