@@ -4,7 +4,7 @@ def dragon(a):
 
 
 def checksum(data):
-    raise NotImplementedError
+    return ''.join('1' if a == b else '0' for a, b in zip(data[::2], data[1::2]))
 
 
 def solve(length, initial_state):
